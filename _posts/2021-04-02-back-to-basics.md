@@ -2,7 +2,7 @@
 layout: post
 read_time: true
 show_date: true
-title: "So, what is a neural network?"
+title: "dfadf?"
 date: 2021-04-02
 img: posts/20210402/post7-header.webp
 tags: [neural networks, machine learning, artificial intelligence]
@@ -10,15 +10,16 @@ category: theory
 author: Armando Maynez
 description: "ELI5: what is a neural network."
 ---
-The omnipresence of technology nowadays has made it commonplace to read news about AI, just a quick glance at today's headlines, and I get:
+
+Thedfsdfout AI, just a quick glance at today's headlines, and I get:
+
 - [This Powerful AI Technique Led to Clashes at Google and Fierce Debate in Tech.](https://www.morningbrew.com/emerging-tech/stories/2021/03/29/one-biggest-advancements-ai-also-sparked-fierce-debate-heres?utm_source=morning_brew)
 - [How A.I.-powered companies dodged the worst damage from COVID](https://fortune.com/2021/04/02/ai-forecasting-supply-chain-factories-caterpillar-agco/)
 - [AI technology detects ‘ticking time bomb’ arteries](https://www.mobihealthnews.com/news/emea/ai-technology-detects-ticking-time-bomb-arteries)
 - [AI in Drug Discovery Starts to Live Up to the Hype](https://www.genengnews.com/insights/ai-in-drug-discovery-starts-to-live-up-to-the-hype/)
 - [Pentagon seeks commercial solutions to get its data ready for AI](https://www.c4isrnet.com/artificial-intelligence/2021/04/02/pentagon-seeks-commercial-solutions-to-get-its-data-ready-for-ai/)
-  
 
-Topics from business, manufacturing, supply chain, medicine and biotech and even defense are covered in those news headlines, definitively the advancements on the fields of artificial intelligence, in particular machine learning and deep neural networks have permeated into our daily lives and are here to stay. But, do the general population know what are we talking about when we say "an AI"?  I assume most people correctly imagine a computer algorithm or perhaps the more adventurous minds think of a physical machine, an advanced computer entity or even a robot, getting smarter by itself with every use-case we throw at it. And most people will be right, when "an AI" is mentioned it is indeed an algorithm run by a computer, and there is where the boundary of their knowledge lies. 
+굿.
 
 They say that the best way to learn something is to try to explain it, so in a personal exercise I will try to do an ELI5 (**E**xplain it **L**ike **I** am **5**) version of what is a neural network.
 
@@ -27,7 +28,7 @@ Let's start with a little history, humans have been tinkering with the idea of a
 ![The Analytical Engine](./assets/img/posts/20210402/post7-analytical-engine.jpg)
 <small>The Analytical Engine of Charles Babbage - 1837</small>
 
-Then, in the middle of last century by trying to create a model of how our brain works, Neural Networks were born. Around that time, Frank Rosenblatt at Cornell trying to understand the simple decision system present in the eye of a common housefly,  proposed the idea of a [perceptron](./single-neuron-perceptron.html), a very simple system that processes certain inputs with basic math operations and produces an output.
+Then, in the middle of last century by trying to create a model of how our brain works, Neural Networks were born. Around that time, Frank Rosenblatt at Cornell trying to understand the simple decision system present in the eye of a common housefly, proposed the idea of a [perceptron](./single-neuron-perceptron.html), a very simple system that processes certain inputs with basic math operations and produces an output.
 
 ![A perceptron](./assets/img/posts/20210125/Perceptron.png)
 
@@ -51,6 +52,7 @@ A basic neural network is a combination of perceptrons in different arrangements
 ![A multilayer perceptron](./assets/img/posts/20210402/post7-multilayer-perceptron.png)
 
 A neural network has different components, in its basic form it has:
+
 - Input
 - Hidden layers
 - Output
@@ -61,7 +63,7 @@ A neural network has different components, in its basic form it has:
 
 The inputs of a neural network are in their essence just numbers, therefore anything that can be converted to a number can become an input. Letters in a text, pixels in an image, frequencies in a sound wave, values from a sensor, etc. are all different things that when converted to a numerical value serve as inputs for the neural network. This is one of the reasons why applications of neural networks are so diverse.
 
-Inputs can be as many as one need for the task at hand, from maybe 9 inputs to teach a neural network how to play tic-tac-toe to thousands of pixels from a camera for an autonomous vehicle. Since the input of a perceptron needs to be a single value, if for example a color pixel is chosen as input, it most likely will be broken into three different values; its  red, green and blue components, hence each pixel will become 3 different inputs for the neural network.
+Inputs can be as many as one need for the task at hand, from maybe 9 inputs to teach a neural network how to play tic-tac-toe to thousands of pixels from a camera for an autonomous vehicle. Since the input of a perceptron needs to be a single value, if for example a color pixel is chosen as input, it most likely will be broken into three different values; its red, green and blue components, hence each pixel will become 3 different inputs for the neural network.
 
 ### Hidden layers
 
@@ -75,7 +77,7 @@ A neural network can have from one to as many layers as one can think, and the n
 
 Another critical parameter of a hidden layer is the number of neurons it has, and again, we need to rely on experience to determine how many neurons are needed for a given problem. I have seen networks that vary from a couple of neurons to the thousands. And of course each hidden layer can have as many neurons as we please, so the number of combinations is vast.
 
-To the number of layers, their type and how many neurons each have, is what we call the *network topology* (including the number of inputs and outputs).
+To the number of layers, their type and how many neurons each have, is what we call the _network topology_ (including the number of inputs and outputs).
 
 ### Output
 
@@ -112,5 +114,4 @@ Once Alexa understood what we meant, it then proceeds to execute the action of t
 
 Of course Amazon's Alexa neural networks have undergone quite a lot of training to get to the level where they are, the beauty is that once trained, to perform their magic they just need a few mathematical operations.
 
-As said before, I will continue to write about the basics of neural networks, the next article in the series will dive a bit deeper into the math behind a basic neural network. 
-
+As said before, I will continue to write about the basics of neural networks, the next article in the series will dive a bit deeper into the math behind a basic neural network.
