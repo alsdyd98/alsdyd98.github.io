@@ -2,7 +2,7 @@
 layout: post
 read_time: true
 show_date: true
-title: Auto-Encoding Variational Bayes(VAE)
+title: VAE-Auto-Encoding Variational Bayes(VAE)
 date: 2022-09-25 18:00:00 -0600
 description: Simple description of Auto-Encoding Variational Bayes(VAE)
 img: assets/img/posts/20220915/VAE_title.png
@@ -24,95 +24,79 @@ Variational Inference는 사후확률(posterior) 분포 p(z|x)를 다루기 쉬�
 
 여기서 KLD(Kullback-Leibler divergence) 개념이 등장한다. 간단하게 두 확률 분포 차이(p(z|x) & q(z))를 계산하는데 사용하는 함수이다. KLD가 줄어드는 쪽으로 q(z)를 업데이트하는 과정을 통해 사후 확률을 잘 근사하는 q\*(z)를 얻는게 VI의 아이디어이다.
 
-그렇다면 업데이트 하는 방법이 핵심이 되겠네요?! => Gradient Descent를 VI에 적용한 방법 : SVI
+학습된 근사 사후 추론 모델은 recognition, denoising, representation, visualization의 목적으로 활용될 수 있다. 본 알고리즘이 인식(recognition) 모델에 사용될 때, 이를 Variational Auto-Encoder라고 부를 것이다.
+
+그렇다면 업데이트 하는 방법이 핵심이 되겠네요?! => SVI: Gradient Descent를 VI에 적용한 방법
 [참고](https://ratsgo.github.io/generative%20model/2017/12/19/vi/)
-VAE는
 
-A perceptron is the basic building block of a neural network, it can be compared to a neuron, And its conception is what detonated the vast field of Artificial Intelligence nowadays.
+## 문제 시나리오
 
-Back in the late 1950's, a young [Frank Rosenblatt](https://en.wikipedia.org/wiki/Frank_Rosenblatt) devised a very simple algorithm as a foundation to construct a machine that could learn to perform different tasks.
+i.i.d x로 이루어진, $X = \sum\limits_{i=1}^N{x_i}$를 가정한다. 또한 해당 x는 관측되지 않은 연속 확률 변수 z를 포함한 어떠한 random process에 의해 만들어졌다고 가정한다.
 
-In its essence, a perceptron is nothing more than a collection of values and rules for passing information through them, but in its simplicity lies its power.
+### intractability
 
-<center><img src='./assets/img/posts/20210125/Perceptron.png'></center>
+<center><img src='./assets/img/posts/20220915/intractable.jpeg'></center>
+해결방안 : p(z|x)와 근접할 수 있는 q(z|x)라는 additional network를 정의하자.
 
-Imagine you have a 'neuron' and to 'activate' it, you pass through several input signals, each signal connects to the neuron through a synapse, once the signal is aggregated in the perceptron, it is then passed on to one or as many outputs as defined. A perceptron is but a neuron and its collection of synapses to get a signal into it and to modify a signal to pass on.
+### a large data
 
-In more mathematical terms, a perceptron is an array of values (let's call them weights), and the rules to apply such values to an input signal.
+데이터가 너무 크면 배치 최적화는 연산량이 매우 많다. 우리는 작은 미니배치나 데이터포인트에 대해 파라미터 업데이트를 진행하고 싶은데, Monte Carlo EM과 같은 Sampling Based Solution은 데이터 포인트별로 Sampling Loop를 돌기 때문에 너무 느리다.
 
-For instance a perceptron could get 3 different inputs as in the image, lets pretend that the inputs it receives as signal are: $x_1 = 1, \; x_2 = 2\; and \; x_3 = 3$, if it's weights are $w_1 = 0.5,\; w_2 = 1\; and \; w_3 = -1$ respectively, then what the perceptron will do when the signal is received is to multiply each input value by its corresponding weight, then add them up.
+## 해결방안
 
-<p style="text-align:center">\(<br>
-\begin{align}
-\begin{split}
-\left(x_1 * w_1\right) + \left(x_2 * w_2\right) + \left(x_3 * w_3\right)
-\end{split}
-\end{align}
-\)</p>
+1. 효율적인 ML/MAP 근사 추정 제안
+2. 파라미터 θ의 선택에 따라 관측값 x가 주어졌을 때 잠재 변수 z에 대한 효율적인 근사 사후 추론을 제안
+3. 변수 x에 대한 효율적인 근사 Marginal Inference를 제안한다.
 
-<p style="text-align:center">\(<br>
-\begin{align}<br>
-\begin{split}<br>
-\left(0.5 * 1\right) + \left(1 * 2\right) + \left(-1 * 3\right) = 0.5 + 2 - 3 = -0.5
-\end{split}<br>
-\end{align}<br>
-\)</p>
+### Kullback-Leibler Divergence
 
-Typically when this value is obtained, we need to apply an "activation" function to smooth the output, but let's say that our activation function is linear, meaning that we keep the value as it is, then that's it, that is the output of the perceptron, -0.5.
+위에서 언급한 KLD에 대해서 한번 더 다루고 가야, 하단에서 다룰 Margianal Likelihood에 대해 알 수 있다.
 
-In a practical application, the output means something, perhaps we want our perceptron to classify a set of data and if the perceptron outputs a negative number, then we know the data is of type A, and if it is a positive number then it is of type B.
+<center><img src='./assets/img/posts/20220915/KLD.jpeg'></center>
+다음은 KLD식이다. P와 Q분포가 동일하면 DKL은 0을, 다르면 다를수록 높은 값을 갖게 된다.
 
-Once we understand this, the magic starts to happen through a process called backpropagation, where we "educate" our tiny one neuron brain to have it learn how to do its job.
+[참고](https://greeksharifa.github.io/bayesian_statistics/2020/07/14/Variational-Inference/)
 
-<tweet>The magic starts to happen through a process called backpropagation, where we "educate" our tiny one neuron brain to have it learn how to do its job.</tweet>
+### Marginal Likelihood
 
-For this we need a set of data that it is already classified, we call this a training set. This data has inputs and their corresponding correct output. So we can tell the little brain when it misses in its prediction, and by doing so, we also adjust the weights a bit in the direction where we know the perceptron committed the mistake hoping that after many iterations like this the weights will be so that most of the predictions will be correct.
+<center><img src='./assets/img/posts/20220915/ELBO.png'></center>
+다음은 데이터 포인트 하나에 대한 Marginal Likelihood를 재표현한 식이다.
+다음 정리를 통해, p(z|x)가 Intractable하므로, 계산할 수 없는 KL부분(우측)을 제외한 Tractable Lower bound를 구할 수 있다.
+이때 해당 intractable KL term은 항상 >=0 이다.
 
-After the model trains successfully we can have it classify data it has never seen before, and we have a fairly high confidence that it will do so correctly.
+<center><img src='./assets/img/posts/20220915/trainable_state.jpeg'></center>
+다음은 위의 수식을 거쳐 구한 Marginal Likelihood의 Variational Lower Bound(ELBO)이다.
 
-The math behind this magical property of the perceptron is called gradient descent, and is just a bit of differential calculus that helps us convert the error the brain is having into tiny nudges of value of the weights towards their optimum. [This video series by 3 blue 1 brown explains it wonderfuly.](https://www.youtube.com/watch?v=aircAruvnKk&list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi)
+이 때 학습은 당연하게도 Lower bound를 최적화하는 방향으로 이루어지게 된다.
 
-My program creates a single neuron neural network tuned to guess if a point is above or below a randomly generated line and generates a visualization based on graphs to see how the neural network is learning through time.
+### How?
 
-The neuron has 3 inputs and weights to calculate its output:
+위에서 언급했지만, Lower Bound L(θ,ϕ;x(i))를 θ,ϕ에 대해서 미분하고 최적화하고 싶은데 쉽지 않다.
+이러한 타입의 문제에 대해 일반적으로 쓰이는 Monte Carlo Gradient Estimator는 굉장히 큰 분산을 갖고 있어서 우리의 목적에 적합하지 않다.
+[참고: Variational bayesian inference with stocahstic search, David M Blei, ICML-12](https://icml.cc/2012/papers/687.pdf)
 
-    input 1 is the X coordinate of the point,
-    Input 2 is the y coordinate of the point,
-    Input 3 is the bias and it is always 1
+### SGVB estimator
 
-    Input 3 or the bias is required for lines that do not cross the origin (0,0)
+mild condition 아래에서, 근사 Posterior q(z|x)를 Reparameterize할 수 있다. 이 때 mild condition에 대해 서는 뒤에서 다루겠다. (Reparametrization trick)
 
-The Perceptron starts with weights all set to zero and learns by using 1,000 random points per each iteration.
+q(z|x)라는 근사 Posterior로부터 Samples를 생성하기 위해, 논문에서는 다른 방법을 사용하였다. z가 연속형 확률 변수이고, z ~ q(z|x)가 어떠한 조건부 확률을 따른다고 하자. 이 때 z를, z = g(ϵ,x)라는 Deterministic 변수라고 표현할 수 있다.
+이 떄 ϵ는 독립적인 Marignal p(ϵ)를 가지는 auxiliary variable이고, g(.)는 ϕ에 의해 parameterized되는 vector-valued 함수이다.
 
-The output of the perceptron is calculated with the following activation function:
-if x \* weight_x + y weight_y + weight_bias is positive then 1 else 0
+이 reparameterization을 통해 근사 posterior의 기댓값을 ϕ에 대해 미분 가능한 기댓값의 Monte Carlo 추정량으로 재표현하는 데에 사용될 수 있다.
+우선 ELBO에서 좌측은 우선 킵해놓고 우측 DKL(q(z|x)||p(z))를 조금 보겠다. 해당 식은 적분 수식을 직접 풀어 계산할 수 있다. (appendix 참고)
 
-The error for each point is calculated as the expected outcome of the perceptron minus the real outcome therefore there are only 3 possible error values:
+이제 남은 것은 expected reconstruction error에 해당하는 Ez(logp(x|z))를 풀어주는 것이다.
 
-| Expected | Calculated | Error |
-| :------: | :--------: | :---: |
-|    1     |     -1     |   1   |
-|    1     |     1      |   0   |
-|    -1    |     -1     |   0   |
-|    -1    |     1      |  -1   |
+<center><img src='./assets/img/posts/20220915/SGVB.png'></center>
 
-With every point that is learned if the error is not 0 the weights are adjusted according to:
+다음의 보라색 부분은 L개의 Sample을 뽑아 이에 대한 근사치로 추정량을 구하는 것을 보여준다.
+Prior로부터 나온 근사 Posterior에 대한 KLD 값인 핑크색 항은 Regularizer의 역할 (q*ϕ 라는 inference 를 위한 확률분포가 p*θ 와 비슷하게끔 만드는)을 한다.
 
-    New_weight = Old_weight + error * input * learning_rate
-    for example: New_weight_x = Old_weight_x + error * x * learning rate
+### Stochastic Gradients 계산
 
-A very useful parameter in all of neural networks is teh learning rate, which is basically a measure on how tiny our nudge to the weights is going to be.
+<center><img src='./assets/img/posts/20220915/stoachastic.jpeg'></center>
+<center><img src='./assets/img/posts/20220915/LM.jpg'></center>
 
-In this particular case, I coded the learning_rate to decrease with every iteration as follows:
+### Reparameterization Trick
 
-    learning_rate = 0.01 / (iteration + 1)
-
-this is important to ensure that once the weights are nearing the optimal values the adjustment in each iteration is subsequently more subtle.
-
-<center><img src='./assets/img/posts/20210125/Learning_1000_points_per_iteration.jpg'></center>
-
-In the end, the perceptron always converges into a solution and finds with great precision the line we are looking for.
-
-Perceptrons are quite a revelation in that they can resolve equations by learning, however they are very limited. By their nature they can only resolve linear equations, so their problem space is quite narrow.
-
-Nowadays the neural networks consist of combinations of many perceptrons, in many layers, and other types of "neurons", like convolution, recurrent, etc. increasing significantly the types of problems they solve.
+[나는 왜있을까..](https://jaejunyoo.blogspot.com/2017/05/auto-encoding-variational-bayes-vae-3.html)
