@@ -73,7 +73,7 @@ compress_html:
 
 # Outputting
 timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-
+encoding: UTF-8
 category_archive:
   type: liquid
   path: /categories/
@@ -96,3 +96,7 @@ exclude:
     "package-lock.json",
     "assets/css/sass/",
   ]
+languages: ["ja", "ko", "en"]
+default_lang: "ko"
+exclude_from_localization: ["javascript", "images", "css"]
+parallel_localization: false

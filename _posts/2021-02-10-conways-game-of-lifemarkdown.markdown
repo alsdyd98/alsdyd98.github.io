@@ -5,9 +5,9 @@ show_date: true
 title: VAE-Auto-Encoding Variational Bayes(VAE)
 date: 2022-09-25 18:00:00 -0600
 description: Simple description of Auto-Encoding Variational Bayes(VAE)
-img: assets/img/posts/20220915/VAE_title.png
+img: posts/20220915/VAE_title.png
 tags: [deep learning, auto encoder, neural networks]
-author: 안민용
+author: amy
 github: alsdyd98/
 mathjax: yes
 ---
