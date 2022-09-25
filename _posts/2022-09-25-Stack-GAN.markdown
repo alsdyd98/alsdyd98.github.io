@@ -2,33 +2,53 @@
 layout: post
 read_time: true
 show_date: true
-title: Variational Auto Encoder
-date: 2021-02-10 13:32:20 -0600
-description: Taking a look at variational auto encoder in deeper.
-img: posts/20220915/VAE_title.png
-tags: [deep learning, autoEncoder, KL, Generative Model]
+title: StackGAN
+date: 2021-09-25 13:32:20 -0600
+description: Text to Photo-realistic Image Synthesis with Stacked Generative Adversarial Networks
+img: posts/20220925/title.png
+tags: [deep learning, GAN, Generative Model, Text]
 author: An Min Yong
 github: alsdyd98/
 lang: ko
 mathjax: yes
 ---
 
-첫 글이네요 >< 부족한 점이 많으니, 틈틈히 피드백 해주시면 감사하겠습니다.
+## StackGAN의 목적
 
-## VAE의 목적
+text-to-image의 시초라고도 볼 수 있지 않을까 싶다. 이 논문은 단순히 Vanila GAN에 upsampling layers를 더한 GAN_INT-CLS 보다는 GAN을 두 층을 쌓아서(Stack) 더 좋은 성능을 낼 수 있음을 보여준다.
+조금 더 디테일하게 들어가보자면 두개의 sub-problems로 나눈다.
 
-    " We introduce a stochastic variational inference and learning algorithm that scales to large datasets and, under some mild differentiability conditions, even works in the intractable case"
+1. 원초적인 형태, 색, 그리고 텍스트에 알맞는 object를 스케치 한다.
+2. 텍스트 설명을 한번 더 입력으로 받고, 위에서 나온 1차적인 스케치에 고화질로 덧칠한다.
 
-### Stochastic Variational Inference
+## 문제 시나리오
 
-Variational Inference는 사후확률(posterior) 분포 \\(p(z \vert x)\\)를 다루기 쉬운 확률 분포 q(z)로 근사하는 것을 말한다. 이는 사후확률 분포 계산이 어렵기(intractable) 때문이다.
+기존의 바닐라 GAN을 이용해서 text-to-image를 구현하는 것은 굉장히 어렵다. 보통 GAN에다가 upsampling layers를 더해서 고화질 이미지를 만드는 경우, 1. 높은 학습 instability와 2. nonsensical outputs를 만들어 낸다.
 
-여기서 KLD(Kullback-Leibler divergence) 개념이 등장한다. 간단하게 두 확률 분포 차이 \\(p(z \vert x)\\) & \\(q(z)\\)를 계산하는데 사용하는 함수이다. KLD가 줄어드는 쪽으로 q(z)를 업데이트하는 과정을 통해 사후 확률을 잘 근사하는 q\*(z)를 얻는게 VI의 아이디어이다.
+그렇다고 저화질 이미지를 만드는 경우 => 디테일한 부분 혹은 생생한 부분(e.g. 새의 눈동자)들이 부족하다.
 
-학습된 근사 사후 추론 모델은 recognition, denoising, representation, visualization의 목적으로 활용될 수 있다. 본 알고리즘이 인식(recognition) 모델에 사용될 때, 이를 Variational Auto-Encoder라고 부를 것이다.
+## 해결
 
-그렇다면 업데이트 하는 방법이 핵심이 되겠네요?! => SVI: Gradient Descent를 VI에 적용한 방법
-[참고](https://ratsgo.github.io/generative%20model/2017/12/19/vi/)
+1. 이에 저자는 사람 페인터가 그림을 그리는 방법에서 착안을 받아, 목적에서 언급한 두개의 방법을 두개의 Stacked Generative Adversarial Networks로 구현
+2. 제한된 학습 text-image pairs는 text conditioning manifold의 부족으로 이어진다. 이에 Conditioning Augmentation technique을 제시하여, latent conditioning manifold에서 약간의 random 작은 변화를 일으키고, 만들어지는 이미지들의 다양성을 증가시킨다.
+
+### traing procedure
+
+<center><img src='./assets/img/posts/20220925/trainingprocedure.jpeg'></center>
+
+여기서 x는 true data distribution에서의 real image, z는 noise vector
+
+## Model Architecture
+
+<center><img src='./assets/img/posts/20220925/stackgan-figure2.jpeg'></center>
+
+### Conditioning Augmentation
+
+<center><img src='./assets/img/posts/20220925/CA.jpeg'></center>
+
+텍스트 t는 encoder를 통해 인코딩 되고, 텍스트 임베딩 ⍴가 된다. (이 때 encoder는 FC Layer이다.) 이 후 한번 더 nonlinearly 변형되어서 generator의 input으로 사용될 수 있는 conditioning latent variables가 된다.
+
+\*\* 여기서 문제인 점이, data의 수가 제한되어 있기에, lantent data manifold에서의 불연속성을 야기하기도 한다.
 
 ## 문제 시나리오
 

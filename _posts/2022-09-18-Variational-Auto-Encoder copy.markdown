@@ -2,13 +2,14 @@
 layout: post
 read_time: true
 show_date: true
-title: VAE-Auto-Encoding Variational Bayes(VAE)
-date: 2022-09-25 18:00:00 -0600
-description: Simple description of Auto-Encoding Variational Bayes(VAE)
+title: Variational Auto Encoder
+date: 2021-09-18 13:32:20 -0600
+description: Taking a look at variational auto encoder in deeper.
 img: posts/20220915/VAE_title.png
-tags: [deep learning, auto encoder, neural networks]
-author: amy
+tags: [deep learning, autoEncoder, KL, Generative Model]
+author: An Min Yong
 github: alsdyd98/
+lang: ko
 mathjax: yes
 ---
 
@@ -20,9 +21,9 @@ mathjax: yes
 
 ### Stochastic Variational Inference
 
-Variational Inference는 사후확률(posterior) 분포 p(z|x)를 다루기 쉬운 확률 분포 q(z)로 근사하는 것을 말한다. 이는 사후확률 분포 계산이 어렵기(intractable) 때문이다.
+Variational Inference는 사후확률(posterior) 분포 \\(p(z \vert x)\\)를 다루기 쉬운 확률 분포 q(z)로 근사하는 것을 말한다. 이는 사후확률 분포 계산이 어렵기(intractable) 때문이다.
 
-여기서 KLD(Kullback-Leibler divergence) 개념이 등장한다. 간단하게 두 확률 분포 차이(p(z|x) & q(z))를 계산하는데 사용하는 함수이다. KLD가 줄어드는 쪽으로 q(z)를 업데이트하는 과정을 통해 사후 확률을 잘 근사하는 q\*(z)를 얻는게 VI의 아이디어이다.
+여기서 KLD(Kullback-Leibler divergence) 개념이 등장한다. 간단하게 두 확률 분포 차이 \\(p(z \vert x)\\) & \\(q(z)\\)를 계산하는데 사용하는 함수이다. KLD가 줄어드는 쪽으로 q(z)를 업데이트하는 과정을 통해 사후 확률을 잘 근사하는 q\*(z)를 얻는게 VI의 아이디어이다.
 
 학습된 근사 사후 추론 모델은 recognition, denoising, representation, visualization의 목적으로 활용될 수 있다. 본 알고리즘이 인식(recognition) 모델에 사용될 때, 이를 Variational Auto-Encoder라고 부를 것이다.
 
@@ -31,12 +32,12 @@ Variational Inference는 사후확률(posterior) 분포 p(z|x)를 다루기 쉬�
 
 ## 문제 시나리오
 
-i.i.d x로 이루어진, $X = \sum\limits_{i=1}^N{x_i}$를 가정한다. 또한 해당 x는 관측되지 않은 연속 확률 변수 z를 포함한 어떠한 random process에 의해 만들어졌다고 가정한다.
+i.i.d x로 이루어진, \\(X = \sum\limits\_{i=1}^N{x_i}\\)를 가정한다. 또한 해당 x는 관측되지 않은 연속 확률 변수 z를 포함한 어떠한 random process에 의해 만들어졌다고 가정한다.
 
 ### intractability
 
 <center><img src='./assets/img/posts/20220915/intractable.jpeg'></center>
-해결방안 : p(z|x)와 근접할 수 있는 q(z|x)라는 additional network를 정의하자.
+해결방안 : \\(p(z \vert x)\\)와 근접할 수 있는 \\(q(z \vert x)\\)라는 additional network를 정의하자.
 
 ### a large data
 
@@ -61,7 +62,7 @@ i.i.d x로 이루어진, $X = \sum\limits_{i=1}^N{x_i}$를 가정한다. 또한 
 
 <center><img src='./assets/img/posts/20220915/ELBO.png'></center>
 다음은 데이터 포인트 하나에 대한 Marginal Likelihood를 재표현한 식이다.
-다음 정리를 통해, p(z|x)가 Intractable하므로, 계산할 수 없는 KL부분(우측)을 제외한 Tractable Lower bound를 구할 수 있다.
+다음 정리를 통해, \\(p(z \vert x)\\)가 Intractable하므로, 계산할 수 없는 KL부분(우측)을 제외한 Tractable Lower bound를 구할 수 있다.
 이때 해당 intractable KL term은 항상 >=0 이다.
 
 <center><img src='./assets/img/posts/20220915/trainable_state.jpeg'></center>
@@ -77,15 +78,15 @@ i.i.d x로 이루어진, $X = \sum\limits_{i=1}^N{x_i}$를 가정한다. 또한 
 
 ### SGVB estimator
 
-mild condition 아래에서, 근사 Posterior q(z|x)를 Reparameterize할 수 있다. 이 때 mild condition에 대해 서는 뒤에서 다루겠다. (Reparametrization trick)
+mild condition 아래에서, 근사 Posterior \\(q(z \vert x)\\)를 Reparameterize할 수 있다. 이 때 mild condition에 대해 서는 뒤에서 다루겠다. (Reparametrization trick)
 
-q(z|x)라는 근사 Posterior로부터 Samples를 생성하기 위해, 논문에서는 다른 방법을 사용하였다. z가 연속형 확률 변수이고, z ~ q(z|x)가 어떠한 조건부 확률을 따른다고 하자. 이 때 z를, z = g(ϵ,x)라는 Deterministic 변수라고 표현할 수 있다.
+\\(q(z \vert x)\\)라는 근사 Posterior로부터 Samples를 생성하기 위해, 논문에서는 다른 방법을 사용하였다. z가 연속형 확률 변수이고, z ~ \\(q(z \vert x)\\)가 어떠한 조건부 확률을 따른다고 하자. 이 때 z를, z = g(ϵ,x)라는 Deterministic 변수라고 표현할 수 있다.
 이 떄 ϵ는 독립적인 Marignal p(ϵ)를 가지는 auxiliary variable이고, g(.)는 ϕ에 의해 parameterized되는 vector-valued 함수이다.
 
 이 reparameterization을 통해 근사 posterior의 기댓값을 ϕ에 대해 미분 가능한 기댓값의 Monte Carlo 추정량으로 재표현하는 데에 사용될 수 있다.
-우선 ELBO에서 좌측은 우선 킵해놓고 우측 DKL(q(z|x)||p(z))를 조금 보겠다. 해당 식은 적분 수식을 직접 풀어 계산할 수 있다. (appendix 참고)
+우선 ELBO에서 좌측은 우선 킵해놓고 우측 \\(DKL(q(z \vert x) || p(z))\\)를 조금 보겠다. 해당 식은 적분 수식을 직접 풀어 계산할 수 있다. (appendix 참고)
 
-이제 남은 것은 expected reconstruction error에 해당하는 Ez(logp(x|z))를 풀어주는 것이다.
+이제 남은 것은 expected reconstruction error에 해당하는 \\(Ez(logp(x \vert z))\\)를 풀어주는 것이다.
 
 <center><img src='./assets/img/posts/20220915/SGVB.png'></center>
 
