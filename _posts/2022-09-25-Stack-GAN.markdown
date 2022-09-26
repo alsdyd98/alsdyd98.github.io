@@ -58,3 +58,5 @@ latent variable c를 텍스트 임베딩 ⍴를 이용해 만들어진 independe
 ### Stage- 1&2 GAN
 
 위에 Model Architecture에서 어떻게 모델이 구성되고 돌아가는지를 확인할 수 있다.
+
+여기서 몇가지 특이한 점 (바닐라 GAN과의 차이점)이 있다. 첫 번째는 Discriminator 학습에 있어서, real images와 corresponding text descriptions을 positive pair로 제공받는다.
